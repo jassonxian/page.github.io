@@ -4,15 +4,17 @@
   <meta charset="utf-8">
   
   
-  <title>个人博客</title>
+  <title>async和await:让异步编程更简单 | 个人博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="mzx frontend blog">
-<meta property="og:type" content="website">
-<meta property="og:title" content="个人博客">
-<meta property="og:url" content="http://www.suner.work/index.html">
+  <meta name="description" content="async关键字首先，我们使用async关键字，您可以将它放在函数声明之前，将其转换为async function。异步函数是一个知道怎样预期 await 关键字可用于调用异步代码可能性的函数。 12async function hello() &amp;#123; return &quot;Hello&quot; &amp;#125;;hello();  该函数会返回一个promise。这是异步函数的特征之一">
+<meta property="og:type" content="article">
+<meta property="og:title" content="async和await:让异步编程更简单">
+<meta property="og:url" content="http://www.suner.work/2021/03/25/web%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91/async%E3%80%81await:%E8%AE%A9%E5%BC%82%E6%AD%A5%E7%BC%96%E7%A8%8B%E6%9B%B4%E7%AE%80%E5%8D%95/index.html">
 <meta property="og:site_name" content="个人博客">
-<meta property="og:description" content="mzx frontend blog">
+<meta property="og:description" content="async关键字首先，我们使用async关键字，您可以将它放在函数声明之前，将其转换为async function。异步函数是一个知道怎样预期 await 关键字可用于调用异步代码可能性的函数。 12async function hello() &amp;#123; return &quot;Hello&quot; &amp;#125;;hello();  该函数会返回一个promise。这是异步函数的特征之一">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-03-25T01:18:24.165Z">
+<meta property="article:modified_time" content="2021-03-26T09:39:39.280Z">
 <meta property="article:author" content="mazhaoxian">
 <meta property="article:tag" content="frontend">
 <meta name="twitter:card" content="summary">
@@ -76,102 +78,7 @@
 </header>
 
       <div class="outer">
-        <section id="main">
-  
-    <article id="post-web前端开发/hook" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2021/03/26/web%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91/hook/" class="article-date">
-  <time class="dt-published" datetime="2021-03-26T09:34:34.000Z" itemprop="datePublished">2021-03-26</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2021/03/26/web%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91/hook/">React性能优化——hook</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <h4 id="一、前言"><a href="#一、前言" class="headerlink" title="一、前言"></a>一、前言</h4><p>​        随着16.8版本的出现，react又带我们回到了函数式编程，其的出现解决了类组件的不足同时带来了一些新特性；本文主要围绕Hook所提供的新特性来抛砖引玉我们在使用类组件的时候可能从未关注过的性能方面的问题。</p>
-<p> 什么是Hook？</p>
-<blockquote>
-<p>官方文档给出了解释：Hook 是 React 16.8 的新增特性。它可以让你在不编写 class 的情况下使用 state 以及其他的 React 特性。</p>
-</blockquote>
-<p> 在react中，每当我们新页面打开的时候，父组件一旦更新，子组件也会跟着更新，React 性能优化的理念的主要方向就是这两个：    </p>
-<ol>
-<li>减少重新 render 的次数。因为在 React 里最重(花时间最长)的一块就是 reconction(简单的可以理解为 diff)，如果不 render，就不会 reconction。</li>
-<li>减少计算的量。主要是减少重复计算，对于函数式组件来说，每次 render 都会重新从头开始执行函数调用。</li>
-</ol>
-<p>在使用类组件的时候，使用的 React 优化 API 主要是：<code>shouldComponentUpdate</code>和 <code>PureComponent</code>，这两个 API 所提供的解决思路都是为了<strong>减少重新 render 的次数</strong>，主要是减少父组件更新而子组件也更新的情况，虽然也可以在 state 更新的时候阻止当前组件渲染，如果要这么做的话，证明你这个属性不适合作为 state，而应该作为静态属性或者放在 class 外面作为一个简单的变量 。</p>
-<p>​        但是在函数式组件里面没有声明周期也没有类，那如何来做性能优化呢？</p>
-<h4 id="二、-React-memo"><a href="#二、-React-memo" class="headerlink" title="二、    React.memo()"></a>二、    React.memo()</h4><p>简单用法如下，通过 <code>React.memo</code> 包裹的组件在 props 不变的情况下，这个被包裹的组件是不会重新渲染的，会直接复用最近一次渲染的结果。</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Child</span>(<span class="params">&#123;seconds&#125;</span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;I am rendering&#x27;</span>);</span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">        &lt;div&gt;I am update every &#123;seconds&#125; seconds&lt;/div&gt;</span><br><span class="line">    )</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> React.memo(Child)</span><br></pre></td></tr></table></figure>
-
-<p>React.memo()可接受2个参数，第一个参数为纯函数的组件，第二个参数用于对比props控制是否刷新，与<a target="_blank" rel="noopener" href="https://links.jianshu.com/go?to=https://reactjs.org/docs/react-component.html%23shouldcomponentupdate">shouldComponentUpdate()</a>功能类似。</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> MyComponent = React.memo(<span class="function"><span class="keyword">function</span> <span class="title">MyComponent</span>(<span class="params">props</span>) </span>&#123;</span><br><span class="line">  <span class="comment">/* 使用 props 渲染 */</span></span><br><span class="line">&#125;);</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">areEqual</span>(<span class="params">prevProps, nextProps</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> isEqual(prevProps, nextProps); <span class="comment">//这里我用到lodash的isEqual方法去判断props是不是完全相等</span></span><br><span class="line">  <span class="comment">/*</span></span><br><span class="line"><span class="comment">  如果把 nextProps 传入 render 方法的返回结果与</span></span><br><span class="line"><span class="comment">  将 prevProps 传入 render 方法的返回结果一致则返回 true，</span></span><br><span class="line"><span class="comment">  否则返回 false</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> React.memo(MyComponent, areEqual);</span><br></pre></td></tr></table></figure>
-
-<p>​        使用memo后，我们如何知道组件重新render的次数呢？常用方法console.log一下，看看打印次数，这里我们借助<code>ahooks</code>库中的一些方法，来得知具体那些属性影响了render</p>
-<p>​        这时也抛出一个优化方法： <strong>避免向子组件传递一些无关的属性</strong></p>
-<h4 id="三、-ahooks使用"><a href="#三、-ahooks使用" class="headerlink" title="三、 ahooks使用"></a>三、 ahooks使用</h4><p>​        ahooks 是一个 React Hooks 库，致力提供常用且高质量的 Hooks。它提供了很多hook的封装，在这里不做过多介绍，直接从解决多次render这个问题入手。</p>
-<ol>
-<li><h5 id="useWhyDidYouUpdate-—-帮助开发者排查是什么改变导致了组件的render。-它接受两个参数，第一个参数为观测组件的名称，第二个参数为当前组件的props。打开控制台，可以看到改变的-被观测的-state-或者-props-等输出。"><a href="#useWhyDidYouUpdate-—-帮助开发者排查是什么改变导致了组件的render。-它接受两个参数，第一个参数为观测组件的名称，第二个参数为当前组件的props。打开控制台，可以看到改变的-被观测的-state-或者-props-等输出。" class="headerlink" title="useWhyDidYouUpdate — 帮助开发者排查是什么改变导致了组件的render。    它接受两个参数，第一个参数为观测组件的名称，第二个参数为当前组件的props。打开控制台，可以看到改变的 被观测的 state 或者 props 等输出。"></a>useWhyDidYouUpdate — 帮助开发者排查是什么改变导致了组件的render。    它接受两个参数，第一个参数为观测组件的名称，第二个参数为当前组件的props。打开控制台，可以看到改变的 被观测的 <code>state</code> 或者 <code>props</code> 等输出。</h5></li>
-</ol>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; useWhyDidYouUpdate &#125; <span class="keyword">from</span> <span class="string">&#x27;ahooks&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> React, &#123; useState &#125; <span class="keyword">from</span> <span class="string">&#x27;react&#x27;</span>;</span><br><span class="line"><span class="keyword">const</span> Demo: React.FC&lt;&#123; <span class="attr">count</span>: number &#125;&gt; = <span class="function">(<span class="params">props</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> [randomNum, setRandomNum] = useState(<span class="built_in">Math</span>.random());</span><br><span class="line">  useWhyDidYouUpdate(<span class="string">&#x27;useWhyDidYouUpdateComponent&#x27;</span>, &#123; ...props, randomNum &#125;);</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;div&gt;</span><br><span class="line">        &lt;span&gt;number: &#123;props.count&#125;&lt;/span&gt;</span><br><span class="line">      &lt;/div&gt;</span><br><span class="line">      &lt;div&gt;</span><br><span class="line">        randomNum: &#123;randomNum&#125;</span><br><span class="line">        &lt;button onClick=&#123;<span class="function">() =&gt;</span> setRandomNum(<span class="built_in">Math</span>.random)&#125; style=&#123;&#123; <span class="attr">marginLeft</span>: <span class="number">8</span> &#125;&#125;&gt;</span><br><span class="line">          🎲</span><br><span class="line">        &lt;/button&gt;</span><br><span class="line">      &lt;/div&gt;</span><br><span class="line">    &lt;/div&gt;</span><br><span class="line">  );</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> () =&gt; &#123;</span><br><span class="line">  <span class="keyword">const</span> [count, setCount] = useState(<span class="number">0</span>);</span><br><span class="line">  <span class="keyword">const</span> onDemo = <span class="function">() =&gt;</span> &#123;</span><br><span class="line">      <span class="built_in">console</span>.log(<span class="number">1</span>)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;Demo count=&#123;count&#125; onClick=&#123;onDemo&#125; /&gt;</span><br><span class="line">      &lt;div&gt;</span><br><span class="line">        &lt;button onClick=&#123;<span class="function">() =&gt;</span> setCount(<span class="function">(<span class="params">prevCount</span>) =&gt;</span> prevCount - <span class="number">1</span>)&#125;&gt;count -&lt;/button&gt;</span><br><span class="line">        &lt;button onClick=&#123;<span class="function">() =&gt;</span> setCount(<span class="function">(<span class="params">prevCount</span>) =&gt;</span> prevCount + <span class="number">1</span>)&#125; style=&#123;&#123; <span class="attr">marginLeft</span>: <span class="number">8</span> &#125;&#125;&gt;</span><br><span class="line">          count +</span><br><span class="line">        &lt;/button&gt;</span><br><span class="line">      &lt;/div&gt;</span><br><span class="line">      &lt;p&gt;Please open the browser <span class="built_in">console</span> to view the output!&lt;/p&gt;</span><br><span class="line">    &lt;/div&gt;</span><br><span class="line">  );</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<p>​        通过上述代码，我们发现，点击父组件改变count，子组件就会重新render，但是有个奇怪的问题出现了，为什么<code>useWhyDidYouUpdate</code>打印出来的影响渲染的属性中会有onClick呢？这个问题就会归到开篇所说由于父组件的count发生了变化，导致了父组件的重绘也就是render，函数式组件就会从头开始重新执行函数调用，这时候我们再父组件定义的<code>onDemo</code>函数就会重新被定义，此时新生成的<code>onDemo</code>与之前传入子组件的<code>onDemo</code>并不是相同的函数。在我们的代码中无法避免函数的定义与传递，那么如何做优化呢？    </p>
-<p>​        我们首先想到的可能是把组件内部的函数定义到组件外，当然这种方法一定可取，但是在函数内调用一些组件内部的方法或参数的时候就比较麻烦了，这时候就引出下面这个方法</p>
-<ol start="2">
-<li><h5 id="usePersistFn-——-持久化-function-的-Hook。"><a href="#usePersistFn-——-持久化-function-的-Hook。" class="headerlink" title="usePersistFn —— 持久化 function 的 Hook。"></a>usePersistFn —— 持久化 function 的 Hook。</h5><p>​        在某些场景中，你可能会需要用 useCallback 记住一个回调，但由于内部函数必须经常重新创建，记忆效果不是很好，导致子组件重复 render。对于超级复杂的子组件，重新渲染会对性能造成影响。通过 usePersistFn，可以保证函数地址永远不会变化。它的用法很简单：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">type noop = <span class="function">(<span class="params">...args: any[]</span>) =&gt;</span> any;</span><br><span class="line"><span class="keyword">const</span> fn = usePersistFn&lt;T <span class="keyword">extends</span> noop&gt;(</span><br><span class="line">  fn: T,</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
-
-<p><code>usePersistFn</code>接受一个参数，就是你需要持久化的函数。</p>
-</li>
-<li><h5 id="useSetState-——-分组，分类管理state"><a href="#useSetState-——-分组，分类管理state" class="headerlink" title="useSetState —— 分组，分类管理state"></a>useSetState —— 分组，分类管理state</h5><p>​        为什么最后提到了这个方法？组件的渲染根本原因就是state的改变，那么我们使用<code>useState</code>时，基本上会定义很多如下state</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> [modelVisible, setModelVisible] = useState(<span class="literal">false</span>);</span><br><span class="line"><span class="keyword">const</span> [modelType, setModelType] = useState(<span class="string">&#x27;create&#x27;</span>);</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
-
-<p>​        当然，使用setState时也可以把他们定义到一块，以<code>Object</code>的形式来定义一个组，但是弊端是我们每次修改某一个属性都需要把其余属性重新写一边，比较麻烦。那么useSetState就有必要了</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> [modelState, setModelState] = useSetState(&#123;</span><br><span class="line">	modelType: <span class="string">&#x27;create&#x27;</span>,</span><br><span class="line">	modelVisible: <span class="literal">false</span>,</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-
-<p>​        <strong>回归正题，尽可能减少state的定义，也能解决组件本身的render，这时候使用useSetState会非常方便。</strong></p>
-</li>
-</ol>
-<h4 id="四、小结"><a href="#四、小结" class="headerlink" title="四、小结"></a>四、小结</h4><p>通过以上内容我们总结为一下几点：        </p>
-<ol>
-<li><p><em><strong>减少state的定义</strong></em></p>
-</li>
-<li><p><em><strong>优化组件内部定义的函数</strong></em></p>
-</li>
-<li><p><em><strong>优化子组件的渲染机制</strong></em></p>
-</li>
-<li><p><em><strong>避免向子组件传递不必要的属性</strong></em></p>
-</li>
-</ol>
-<p>​        前端渲染性能问题绝大多数我们是不需要考虑的，但是避免不了一些复杂页面的出现。通过以上内容，我们基本上能解决掉绝大部分的渲染性能问题，当然还存在很多优化的空间需要我们去深入研究。本文只提供一个简单可行的解决方案，希望大家能研究探讨出更完美更高效的优化方案！</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://www.suner.work/2021/03/26/web%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91/hook/" data-id="ckmq45wm00001xwgpdytehg39" data-title="React性能优化——hook" class="article-share-link">分享</a>
-      
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
-    <article id="post-web前端开发/async、await:让异步编程更简单" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+        <section id="main"><article id="post-web前端开发/async、await:让异步编程更简单" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2021/03/25/web%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91/async%E3%80%81await:%E8%AE%A9%E5%BC%82%E6%AD%A5%E7%BC%96%E7%A8%8B%E6%9B%B4%E7%AE%80%E5%8D%95/" class="article-date">
   <time class="dt-published" datetime="2021-03-25T01:18:24.165Z" itemprop="datePublished">2021-03-25</time>
@@ -184,8 +91,8 @@
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2021/03/25/web%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91/async%E3%80%81await:%E8%AE%A9%E5%BC%82%E6%AD%A5%E7%BC%96%E7%A8%8B%E6%9B%B4%E7%AE%80%E5%8D%95/">async和await:让异步编程更简单</a>
+    <h1 class="p-name article-title" itemprop="headline name">
+      async和await:让异步编程更简单
     </h1>
   
 
@@ -264,62 +171,28 @@
     </footer>
   </div>
   
-</article>
-
-
-
+    
+<nav id="article-nav">
   
-    <article id="post-hello-world" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2021/03/25/hello-world/" class="article-date">
-  <time class="dt-published" datetime="2021-03-25T01:14:38.095Z" itemprop="datePublished">2021-03-25</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
+    <a href="/2021/03/26/web%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91/hook/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">前一篇</strong>
+      <div class="article-nav-title">
         
+          React性能优化——hook
+        
+      </div>
+    </a>
   
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2021/03/25/hello-world/">Hello World</a>
-    </h1>
   
+    <a href="/2021/03/25/hello-world/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">后一篇</strong>
+      <div class="article-nav-title">Hello World</div>
+    </a>
+  
+</nav>
 
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://www.suner.work/2021/03/25/hello-world/" data-id="ckmo6y9b60001ypgp6zs9ai1g" data-title="Hello World" class="article-share-link">分享</a>
-      
-      
-      
-    </footer>
-  </div>
   
 </article>
-
-
-
-  
 
 
 </section>
